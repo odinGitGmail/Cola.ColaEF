@@ -1,8 +1,11 @@
-# Changelog
+## <small>1.0.3 (2024-01-04)</small>
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+* chore(release): 1.0.3 ([830dafa](https://github.com/odinGitGmail/Cola.ColaEF/commit/830dafa))
+* no message ([b76afc6](https://github.com/odinGitGmail/Cola.ColaEF/commit/b76afc6))
+* no message ([79f437e](https://github.com/odinGitGmail/Cola.ColaEF/commit/79f437e))
+* no message ([6e044dd](https://github.com/odinGitGmail/Cola.ColaEF/commit/6e044dd))
 
-### [1.0.3](https://github.com/odinGitGmail/Cola.ColaEF/compare/v1.0.2...v1.0.3) (2024-01-04)
+
 
 ## <small>1.0.2 (2024-01-04)</small>
 
@@ -13,3 +16,6 @@ All notable changes to this project will be documented in this file. See [standa
 * no message ([edeac73](https://github.com/odinGitGmail/Cola.ColaEF/commit/edeac73))
 * no message ([3281d46](https://github.com/odinGitGmail/Cola.ColaEF/commit/3281d46))
 * no message ([50882b0](https://github.com/odinGitGmail/Cola.ColaEF/commit/50882b0))
+
+
+
