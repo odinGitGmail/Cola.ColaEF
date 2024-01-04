@@ -9,6 +9,14 @@
         <AssemblyName>Cola.ColaEF</AssemblyName>
         <RootNamespace>Cola.ColaEF</RootNamespace>
         <Version>1.0.2</Version>
+        <Title>Cola.ColaEF by sqlsugar</Title>
+        <Authors>OdinSam</Authors>
+        <Description>Cola.ColaEntity Framework组件</Description>
+        <Copyright>copyRight © 2023 OdinSam</Copyright>
+        <PackageProjectUrl>https://github.com/odinGitGmail/Cola.ColaEF</PackageProjectUrl>
+        <PackageIcon>icon.png</PackageIcon>
+        <RepositoryUrl>https://github.com/odinGitGmail/Cola.ColaEF</RepositoryUrl>
+        <PackageTags>Cola.ColaEF;entity framework;cola;sqlsugar</PackageTags>
     </PropertyGroup>
 
     <ItemGroup>
