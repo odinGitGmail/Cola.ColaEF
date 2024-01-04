@@ -8,10 +8,8 @@ namespace Cola.ColaEF.Tenant;
 /// </summary>
 public interface ITenantContext
 {
-    int? TenantId { get; }
-
     void SetDbClientByTenant(List<AopOnLogExecutingModel>? aopOnLogExecutingModels,
         List<AopOnErrorModel>? aopOnErrorModels, List<GlobalQueryFilter>? globalQueryFilters);
     
-    SqlSugarClient GetDbClientByTenant(int? tenantId);
+    SqlSugarClient GetDbClientByTenant();
 }

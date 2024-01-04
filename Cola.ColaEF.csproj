@@ -4,11 +4,11 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <AssemblyVersion>1.0.2</AssemblyVersion>
-        <FileVersion>1.0.2</FileVersion>
+        <AssemblyVersion>1.0.3</AssemblyVersion>
+        <FileVersion>1.0.3</FileVersion>
         <AssemblyName>Cola.ColaEF</AssemblyName>
         <RootNamespace>Cola.ColaEF</RootNamespace>
-        <Version>1.0.2</Version>
+        <Version>1.0.3</Version>
         <Title>Cola.ColaEF by sqlsugar</Title>
         <Authors>OdinSam</Authors>
         <Description>Cola.ColaEntity Framework组件</Description>
@@ -28,10 +28,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Cola.ColaCache\Cola.ColaCache.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
         <None Include="icon.png"  Pack="true" PackagePath="\" />
         <EmbeddedResource Include="icon.png">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -39,6 +35,10 @@
     </ItemGroup>
     <ItemGroup>
         <None Include="readme.md" Pack="true" PackagePath="\"/>
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Cola.CoreUtils\Cola.CoreUtils.csproj" />
+      <ProjectReference Include="..\Cola.Core\Cola.Core.csproj" />
     </ItemGroup>
     <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
       <Exec Command="dotnet restore" />
