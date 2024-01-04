@@ -68,6 +68,8 @@ builder.Services.AddSingletonColaSqlSugar(config,new HttpContextAccessor(),
             }
         }
     );
+```
+
 ##### 2. 新建 IOdinLogRepository 和 OdinLogRepository
 ```csharp
 public interface IOdinLogRepository : IBaseRepository<OdinLog>
@@ -138,6 +140,8 @@ public interface IStatus
     public bool IsDelete { get; set; }
 }
 ```
+
+定义实体类 OdinLog MOdel
 ```csharp OdinLog MOdel 
 [SugarTable("tb_OdinLog")]
 public class OdinLog : SqlSugarEntityBase<long>, IStatus
