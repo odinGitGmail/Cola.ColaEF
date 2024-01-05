@@ -180,11 +180,15 @@ public class OdinServices : BaseServices<OdinLog>, IOdinServices
 }
 ```
 ##### 4. 注入仓储
+```csharp
 builder.Services.AddSingleton<IOdinLogRepository, OdinLogRepository>();
 builder.Services.AddSingleton<IOdinServices, OdinServices>();
+```
 
 ##### 5. 模拟 controller 获取 IOdinServices
+```csharp
 var odinServices = builder.Services.BuildServiceProvider().GetService<IOdinServices>();
+```
 
 ##### 6. 调用业务方法获取数据
 ```csharp
