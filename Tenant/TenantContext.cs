@@ -123,13 +123,13 @@ public class TenantContext : ITenantContext
             
             #endregion
             
-            DbClients.TryAdd(config.ConfigId!.ToInt(), client);
+            DbClients.TryAdd(config.ConfigId!.StringToInt(), client);
         }
     }
     
     public SqlSugarClient GetDbClientByTenant()
     {
-        var tenantId = _tenantResolutionStrategy.ResolveTenantKey().ToInt();
+        var tenantId = _tenantResolutionStrategy.ResolveTenantKey().StringToInt();
         if (DbClients.TryGetValue(tenantId, out SqlSugarClient? sqlSugarClient))
         {
             return sqlSugarClient;
