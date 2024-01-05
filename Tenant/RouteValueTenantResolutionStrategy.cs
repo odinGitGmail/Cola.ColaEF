@@ -1,4 +1,4 @@
-﻿using Cola.Core.Utils.Extensions;
+﻿using Cola.CoreUtils.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
@@ -18,7 +18,7 @@ public class RouteValueTenantResolutionStrategy : ITenantResolutionStrategy
     }
 
     /// <summary>
-    ///     路由模式 通过字段{tenantId} 传递参数  租户id
+    ///     路由模式 通过字段 {tenantId} 传递参数  租户id
     /// </summary>
     /// <returns></returns>
     public string? GetTenantResolutionKey()

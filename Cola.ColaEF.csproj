@@ -4,10 +4,20 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <AssemblyVersion>1.0.0.0</AssemblyVersion>
-        <FileVersion>1.0.0.0</FileVersion>
+        <AssemblyVersion>1.0.3</AssemblyVersion>
+        <FileVersion>1.0.3</FileVersion>
         <AssemblyName>Cola.ColaEF</AssemblyName>
         <RootNamespace>Cola.ColaEF</RootNamespace>
+        <Version>1.0.3</Version>
+        <Title>Cola.ColaEF by sqlsugar</Title>
+        <Authors>OdinSam</Authors>
+        <Description>Cola.ColaEntity Framework组件</Description>
+        <Copyright>copyRight © 2023 OdinSam</Copyright>
+        <PackageProjectUrl>https://github.com/odinGitGmail/Cola.ColaEF</PackageProjectUrl>
+        <PackageIcon>icon.png</PackageIcon>
+        <RepositoryUrl>https://github.com/odinGitGmail/Cola.ColaEF</RepositoryUrl>
+        <PackageTags>Cola.ColaEF;entity framework;cola;sqlsugar</PackageTags>
+        <PackageReadmeFile>./readme.md</PackageReadmeFile>
     </PropertyGroup>
 
     <ItemGroup>
@@ -18,6 +28,19 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Cola.ColaCache\Cola.ColaCache.csproj" />
+        <None Include="icon.png"  Pack="true" PackagePath="\" />
+        <EmbeddedResource Include="icon.png">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </EmbeddedResource>
     </ItemGroup>
+    <ItemGroup>
+        <None Include="readme.md" Pack="true" PackagePath="\"/>
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Cola.CoreUtils\Cola.CoreUtils.csproj" />
+      <ProjectReference Include="..\Cola.Core\Cola.Core.csproj" />
+    </ItemGroup>
+    <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+      <Exec Command="dotnet restore" />
+    </Target>
 </Project>

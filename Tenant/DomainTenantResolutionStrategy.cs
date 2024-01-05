@@ -1,11 +1,14 @@
 ﻿using Cola.Core.Models.ColaEF;
 using Cola.Core.Utils.Constants;
-using Cola.Core.Utils.Extensions;
+using Cola.CoreUtils.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 
 namespace Cola.ColaEF.Tenant;
-
+/// <summary>
+/// 通过 efConfig 获取 租户id策略
+/// 在 ColaOrm 配置中 配置 Domain 节点，获取 TenantId
+/// </summary>
 public class DomainTenantResolutionStrategy : ITenantResolutionStrategy
 {
     private readonly IConfiguration _configuration;

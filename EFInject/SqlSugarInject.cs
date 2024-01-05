@@ -1,4 +1,4 @@
-﻿using Cola.ColaEF.BaseRepository;
+﻿using Cola.ColaEF.BaseUnitOfWork;
 using Cola.ColaEF.Models;
 using Cola.ColaEF.Tenant;
 using Cola.Core.ColaConsole;
@@ -10,7 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SqlSugar;
 
-namespace Cola.ColaEF.EfInject;
+namespace Cola.ColaEF.EFInject;
 
 public static class SqlSugarInject
 {
@@ -84,15 +84,17 @@ public static class SqlSugarInject
         #endregion
 
         InjectTenantResolutionStrategy(services, httpContextAccessor, configuration, colaEfConfigOption);
-        if (sqlSugarConfigLst.Count > 0)
-        {
-            services.AddSingleton<ISqlSugarRepository>(SqlSugarRepository.Create);
-            ConsoleHelper.WriteInfo("注入类型【 ISqlSugarRepository, SqlSugarRepository 】");
-        }
-        else
-        {
-            ConsoleHelper.WriteException("SqlSugar配置不正确，无法类型【 ISqlSugarRepository, SqlSugarRepository 】");
-        }
+        
+        services.AddSingleton<IUnitOfWork,UnitOfWork>();
+        // if (sqlSugarConfigLst.Count > 0)
+        // {
+        //     services.AddSingleton<EFRepository.IBaseRepository>(SqlSugarRepository.Create);
+        //     ConsoleHelper.WriteInfo("注入类型【 ISqlSugarRepository, SqlSugarRepository 】");
+        // }
+        // else
+        // {
+        //     ConsoleHelper.WriteException("SqlSugar配置不正确，无法类型【 ISqlSugarRepository, SqlSugarRepository 】");
+        // }
 
         return services;
     }
