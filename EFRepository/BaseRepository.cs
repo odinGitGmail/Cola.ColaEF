@@ -4,6 +4,7 @@ using Cola.ColaEF.BaseUnitOfWork;
 using Cola.Core.Models.ColaEF;
 using SqlSugar;
 using Cola.CoreUtils.Extensions;
+
 namespace Cola.ColaEF.EFRepository;
 /// <summary>
 /// BaseRepository
@@ -13,23 +14,15 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
 {
     #region variable and ctor
 
-    private readonly IUnitOfWork _unitOfWork;
-    private SqlSugarClient _dbBase;
-
+    private readonly ISqlSugarClient _dbBase;
     /// <summary>
     /// BaseRepository ctor
     /// </summary>
     /// <param name="unitOfWork"></param>
     public BaseRepository(IUnitOfWork unitOfWork)
     {
-        _unitOfWork = unitOfWork;
         _dbBase = unitOfWork.GetDbClient();
     }
-
-    /// <summary>
-    /// _db ISqlSugarClient
-    /// </summary>
-    private ISqlSugarClient Db => _dbBase;
     
     /// <summary>
     /// public  ISqlSugarClient DbClient
@@ -41,37 +34,37 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
 
     #region queryPrimaryKey
 
-    private ISugarQueryable<TEntity> QueryablePrimaryKey(TEntity entity, bool useSqlSugarCache = false)
+    private ISugarQueryable<TEntity> QueryablePrimaryKey(TEntity entity)
     {
-        return Db.Queryable<TEntity>().WithCacheIF(useSqlSugarCache).WhereClassByPrimaryKey(entity);
+        return _dbBase.Queryable<TEntity>().WhereClassByPrimaryKey(entity);
     }
-    public TEntity QueryPrimaryKey(TEntity entity, bool useSqlSugarCache = false)
+    public TEntity QueryPrimaryKey(TEntity entity)
     {
-        return QueryablePrimaryKey(entity, useSqlSugarCache).Single();
+        return QueryablePrimaryKey(entity).Single();
     }
 
-    public Task<TEntity> QueryPrimaryKeyAsync(TEntity entity, bool useSqlSugarCache = false)
+    public async Task<TEntity> QueryPrimaryKeyAsync(TEntity entity)
     {
-        return QueryablePrimaryKey(entity, useSqlSugarCache).SingleAsync();
+        return await QueryablePrimaryKey(entity).SingleAsync();
     }
 
     #endregion
 
     #region queryPrimaryKeys
 
-    private ISugarQueryable<TEntity> QueryablePrimaryKeys(List<TEntity> entities, bool useSqlSugarCache = false)
+    private ISugarQueryable<TEntity> QueryablePrimaryKeys(List<TEntity> entitiestrue)
     {
-        return Db.Queryable<TEntity>().WithCacheIF(useSqlSugarCache).WhereClassByPrimaryKey(entities);
+        return _dbBase.Queryable<TEntity>().WhereClassByPrimaryKey(entitiestrue);
     }
     
-    public List<TEntity> QueryPrimaryKeys(List<TEntity> entities, bool useSqlSugarCache = false)
+    public List<TEntity> QueryPrimaryKeys(List<TEntity> entitiestrue)
     {
-        return QueryablePrimaryKeys(entities, useSqlSugarCache).ToList();
+        return QueryablePrimaryKeys(entitiestrue).ToList();
     }
     
-    public Task<List<TEntity>> QueryPrimaryKeysAsync(List<TEntity> entities, bool useSqlSugarCache = false)
+    public async Task<List<TEntity>> QueryPrimaryKeysAsync(List<TEntity> entitiestrue)
     {
-        return QueryablePrimaryKeys(entities, useSqlSugarCache).ToListAsync();
+        return await QueryablePrimaryKeys(entitiestrue).ToListAsync();
     }
 
     #endregion
@@ -81,12 +74,10 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
     private ISugarQueryable<TEntity> Queryable(
         Expression<Func<TEntity, bool>>? whereExpression = null,
         Expression<Func<TEntity, object>>? orderByExpression = null,
-        bool isAsc = true,
-        bool useSqlSugarCache = false)
+        bool isAsc = true)
     {
-        return Db
+        return _dbBase
             .Queryable<TEntity>()
-            .WithCacheIF(useSqlSugarCache)
             .WhereIF(whereExpression != null, whereExpression)
             .OrderByIF(orderByExpression != null, orderByExpression, isAsc ? OrderByType.Asc : OrderByType.Desc);
     }
@@ -94,27 +85,23 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
     public List<TEntity> Query(
         Expression<Func<TEntity, bool>>? whereExpression=null,
         Expression<Func<TEntity, object>>? orderByExpression=null,
-        bool isAsc = true,
-        bool useSqlSugarCache = false)
+        bool isAsc = true)
     {
         return Queryable(
             whereExpression,
             orderByExpression,
-            isAsc,
-            useSqlSugarCache).ToList();
+            isAsc).ToList();
     }
 
-    public Task<List<TEntity>> QueryAsync(
+    public async Task<List<TEntity>> QueryAsync(
         Expression<Func<TEntity, bool>>? whereExpression=null,
         Expression<Func<TEntity, object>>? orderByExpression=null,
-        bool isAsc = true,
-        bool useSqlSugarCache = false)
+        bool isAsc = true)
     {
-        return Queryable(
+        return await Queryable(
             whereExpression,
             orderByExpression,
-            isAsc,
-            useSqlSugarCache).ToListAsync();
+            isAsc).ToListAsync();
     }
 
     #endregion
@@ -123,11 +110,11 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
 
     public List<TEntity> QuerySql(string strSql, SugarParameter[]? parameters = null)
     {
-        return Db.Ado.SqlQuery<TEntity>(strSql, parameters);
+        return _dbBase.Ado.SqlQuery<TEntity>(strSql, parameters);
     }
-    public Task<List<TEntity>> QuerySqlAsync(string strSql, SugarParameter[]? parameters = null)
+    public async Task<List<TEntity>> QuerySqlAsync(string strSql, SugarParameter[]? parameters = null)
     {
-        return Db.Ado.SqlQueryAsync<TEntity>(strSql, parameters);
+        return await _dbBase.Ado.SqlQueryAsync<TEntity>(strSql, parameters);
     }
 
     #endregion
@@ -136,11 +123,11 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
 
     public DataTable QueryTable(string strSql, SugarParameter[]? parameters = null)
     {
-        return Db.Ado.GetDataTable(strSql, parameters);
+        return _dbBase.Ado.GetDataTable(strSql, parameters);
     }
-    public Task<DataTable> QueryTableAsync(string strSql, SugarParameter[]? parameters = null)
+    public async Task<DataTable> QueryTableAsync(string strSql, SugarParameter[]? parameters = null)
     {
-        return Db.Ado.GetDataTableAsync(strSql, parameters);
+        return await _dbBase.Ado.GetDataTableAsync(strSql, parameters);
     }
 
     #endregion
@@ -152,27 +139,23 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
         Expression<Func<TEntity, object>>? orderByExpression = null,
         bool isAsc = true,
         int startPage = 1,
-        int pageSize = 20,
-        bool useSqlSugarCache = false)
+        int pageSize = 20)
     {
         return Queryable(
                 whereExpression,
                 orderByExpression,
-                isAsc,
-                useSqlSugarCache).ToPageList(startPage, pageSize);
+                isAsc).ToPageList(startPage, pageSize);
     }
 
-    public Task<List<TEntity>> QueryPagingAsync(
+    public async Task<List<TEntity>> QueryPagingAsync(
         Expression<Func<TEntity, bool>>? whereExpression = null,
         Expression<Func<TEntity, object>>? orderByExpression = null,
         bool isAsc = true,
         int startPage = 1,
-        int pageSize = 20,
-        bool useSqlSugarCache = false)
+        int pageSize = 20)
     {
-        return Db
+        return await _dbBase
             .Queryable<TEntity>()
-            .WithCacheIF(useSqlSugarCache)
             .WhereIF(whereExpression != null, whereExpression)
             .OrderByIF(orderByExpression != null, orderByExpression, isAsc ? OrderByType.Asc : OrderByType.Desc)
             .ToPageListAsync(startPage, pageSize);
@@ -187,8 +170,7 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
         Expression<Func<TEntity, object>>? orderByExpression = null,
         bool isAsc = true,
         int startPage = 1, 
-        int pageSize = 20, 
-        bool useSqlSugarCache = false)
+        int pageSize = 20)
     {
         RefAsync<int> totalCount = 0;
         var list = QueryPaging(
@@ -196,8 +178,7 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
             orderByExpression,
             isAsc,
             startPage,
-            pageSize,
-            useSqlSugarCache);
+            pageSize);
         int pageCount = Math.Ceiling((totalCount.Value.IntToDecimal() / pageSize.IntToDecimal())).DecimalToInt();
         return new ViewModel<TEntity>() { TotalCount = totalCount, PageCount = pageCount, CurrnetPage = startPage, PageSize = pageSize, Data = list };
     }
@@ -207,8 +188,7 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
         Expression<Func<TEntity, object>>? orderByExpression = null,
         bool isAsc = true,
         int startPage = 1, 
-        int pageSize = 20, 
-        bool useSqlSugarCache = false)
+        int pageSize = 20)
     {
         RefAsync<int> totalCount = 0;
         var list = await QueryPagingAsync(
@@ -216,8 +196,7 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
             orderByExpression,
             isAsc,
             startPage,
-            pageSize,
-            useSqlSugarCache);
+            pageSize);
         int pageCount = Math.Ceiling((totalCount.Value.IntToDecimal() / pageSize.IntToDecimal())).DecimalToInt();
         return new ViewModel<TEntity>() { TotalCount = totalCount, PageCount = pageCount, CurrnetPage = startPage, PageSize = pageSize, Data = list };
     }
@@ -228,16 +207,16 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
 
     private IInsertable<TEntity> AddEntity(TEntity entity)
     {
-        return Db.Insertable(entity);
+        return _dbBase.Insertable(entity);
     }
     public int Add(TEntity entity)
     {
         return AddEntity(entity).ExecuteReturnIdentity();
     }
     
-    public Task<int> AddAsync(TEntity entity)
+    public async Task<int> AddAsync(TEntity entity)
     {
-        return AddEntity(entity).ExecuteReturnIdentityAsync();
+        return await AddEntity(entity).ExecuteReturnIdentityAsync();
     }
 
     #endregion
@@ -246,15 +225,15 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
 
     public IInsertable<TEntity> AddListEntity(List<TEntity> entities)
     {
-        return Db.Insertable(entities.ToArray());
+        return _dbBase.Insertable(entities.ToArray());
     }
     public int AddListEntities(List<TEntity> entities)
     {
         return AddListEntity(entities).ExecuteCommand();
     }
-    public Task<int> AddListEntitiesAsync(List<TEntity> entities)
+    public async Task<int> AddListEntitiesAsync(List<TEntity> entities)
     {
-        return AddListEntity(entities).ExecuteCommandAsync();
+        return await AddListEntity(entities).ExecuteCommandAsync();
     }
 
     #endregion
@@ -264,15 +243,15 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
     public int AddBulkEntities(List<TEntity> entities,int? pageSize=null)
     {
         return pageSize != null
-            ? Db.Fastest<TEntity>().PageSize(pageSize.Value).BulkCopy(entities)
-            : Db.Fastest<TEntity>().BulkCopy(entities);
+            ? _dbBase.Fastest<TEntity>().PageSize(pageSize.Value).BulkCopy(entities)
+            : _dbBase.Fastest<TEntity>().BulkCopy(entities);
     }
     
-    public Task<int> AddBulkEntitiesAsync(List<TEntity> entities,int? pageSize=null)
+    public async Task<int> AddBulkEntitiesAsync(List<TEntity> entities,int? pageSize=null)
     {
         return pageSize != null
-            ? Db.Fastest<TEntity>().PageSize(pageSize.Value).BulkCopyAsync(entities)
-            : Db.Fastest<TEntity>().BulkCopyAsync(entities);
+            ? await _dbBase.Fastest<TEntity>().PageSize(pageSize.Value).BulkCopyAsync(entities)
+            : await _dbBase.Fastest<TEntity>().BulkCopyAsync(entities);
 
     }
 
@@ -282,15 +261,15 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
 
     private IDeleteable<TEntity> DeleteById(object id)
     {
-        return Db.Deleteable<TEntity>(id);
+        return _dbBase.Deleteable<TEntity>(id);
     }
     public bool DeleteEntityById(object id)
     {
         return DeleteById(id).ExecuteCommandHasChange();
     }
-    public Task<bool> DeleteEntityByIdAsync(object id)
+    public async Task<bool> DeleteEntityByIdAsync(object id)
     {
-        return DeleteById(id).ExecuteCommandHasChangeAsync();
+        return await DeleteById(id).ExecuteCommandHasChangeAsync();
     }
 
     #endregion
@@ -299,15 +278,15 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
 
     private IDeleteable<TEntity> DeleteEntity(TEntity entity)
     {
-        return Db.Deleteable(entity);
+        return _dbBase.Deleteable(entity);
     }
     public bool Delete(TEntity entity)
     {
         return DeleteEntity(entity).ExecuteCommandHasChange();
     }
-    public Task<bool> DeleteAsync(TEntity entity)
+    public async Task<bool> DeleteAsync(TEntity entity)
     {
-        return DeleteEntity(entity).ExecuteCommandHasChangeAsync();
+        return await DeleteEntity(entity).ExecuteCommandHasChangeAsync();
     }
 
     #endregion
@@ -316,15 +295,15 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
 
     private IDeleteable<TEntity> DeleteListEntityByIds(object[] ids)
     {
-        return Db.Deleteable<TEntity>().In(ids);
+        return _dbBase.Deleteable<TEntity>().In(ids);
     }
     public bool DeleteEntitiesByIds(object[] ids)
     {
         return DeleteListEntityByIds(ids).ExecuteCommandHasChange();
     }
-    public Task<bool> DeleteEntitiesByIdsAsync(object[] ids)
+    public async Task<bool> DeleteEntitiesByIdsAsync(object[] ids)
     {
-        return DeleteListEntityByIds(ids).ExecuteCommandHasChangeAsync();
+        return await DeleteListEntityByIds(ids).ExecuteCommandHasChangeAsync();
     }
 
     #endregion
@@ -333,15 +312,15 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
 
     private IUpdateable<TEntity> UpdateEntity(TEntity entity)
     {
-        return Db.Updateable(entity);
+        return _dbBase.Updateable(entity);
     }
     public bool Update(TEntity entity)
     {
         return UpdateEntity(entity).ExecuteCommandHasChange();
     }
-    public Task<bool> UpdateAsync(TEntity entity)
+    public async Task<bool> UpdateAsync(TEntity entity)
     {
-        return Db.Updateable(entity).ExecuteCommandHasChangeAsync();
+        return await _dbBase.Updateable(entity).ExecuteCommandHasChangeAsync();
     }
 
     #endregion
@@ -351,18 +330,35 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
     public int UpdateBulkEntities(List<TEntity> entities,int? pageSize=null)
     {
         return pageSize != null
-            ? Db.Fastest<TEntity>().PageSize(pageSize.Value).BulkUpdate(entities)
-            : Db.Fastest<TEntity>().BulkUpdate(entities);
+            ? _dbBase.Fastest<TEntity>().PageSize(pageSize.Value).BulkUpdate(entities)
+            : _dbBase.Fastest<TEntity>().BulkUpdate(entities);
     }
     
-    public Task<int> UpdateBulkEntitiesAsync(List<TEntity> entities,int? pageSize=null)
+    public async Task<int> UpdateBulkEntitiesAsync(List<TEntity> entities,int? pageSize=null)
     {
         return pageSize != null
-            ? Db.Fastest<TEntity>().PageSize(pageSize.Value).BulkUpdateAsync(entities)
-            : Db.Fastest<TEntity>().BulkUpdateAsync(entities);
-
+            ? await _dbBase.Fastest<TEntity>().PageSize(pageSize.Value).BulkUpdateAsync(entities)
+            : await _dbBase.Fastest<TEntity>().BulkUpdateAsync(entities);
     }
 
     #endregion
+    
+    public List<TEntity> QueryTree(
+        Expression<Func<TEntity,IEnumerable<object>>> childListExpression,
+        Expression<Func<TEntity, object>> parentIdExpression,
+        object rootValue,
+        object[]? childIds = null)
+    {
+        return _dbBase.Queryable<TEntity>().ToTree(childListExpression, parentIdExpression, rootValue, childIds);
+    }
+    
+    public async Task<List<TEntity>> QueryTreeAsync(
+        Expression<Func<TEntity,IEnumerable<object>>> childListExpression,
+        Expression<Func<TEntity, object>> parentIdExpression,
+        object rootValue,
+        object[]? childIds = null)
+    {
+        return await _dbBase.Queryable<TEntity>().ToTreeAsync(childListExpression, parentIdExpression, rootValue, childIds);
+    }
     
 }

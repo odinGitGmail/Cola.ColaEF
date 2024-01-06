@@ -1,4 +1,6 @@
-﻿namespace Cola.ColaEF.EntityBase;
+﻿using SqlSugar;
+
+namespace Cola.ColaEF.EntityBase;
 
 /// <summary>
 ///     SqlSugarEntityBase
@@ -9,6 +11,7 @@ public class SqlSugarEntityBase<T> : IEntityBase<T>, IDeleted
     /// <summary>
     ///     Id主键
     /// </summary>
+    [SugarColumn(IsPrimaryKey=true)]
     public T? Id { get; set; }
     
     /// <summary>

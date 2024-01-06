@@ -16,35 +16,31 @@ public interface IBaseRepository<TEntity> where TEntity : class
     /// QueryPrimaryKey - query entity by primaryKey
     /// </summary>
     /// <param name="entity">e.g. new Order() { Id=1 }. the id column must has attr [SugarColumn(IsPrimaryKey=true)]）</param>
-    /// <param name="useSqlSugarCache">if <paramref name="useSqlSugarCache" /> was true; otherwise.default false</param>
     /// <typeparam name="TEntity">The type of entity</typeparam>
     /// <returns>TEntity</returns>
-    TEntity QueryPrimaryKey(TEntity entity, bool useSqlSugarCache = false);
+    TEntity QueryPrimaryKey(TEntity entity);
     
     /// <summary>
     /// QueryPrimaryKeyAsync - query entity by primaryKey 
     /// </summary>
     /// <param name="entity">e.g. new Order() { Id=1 }. the id column must has attr [SugarColumn(IsPrimaryKey=true)]）</param>
-    /// <param name="useSqlSugarCache">if <paramref name="useSqlSugarCache" /> was true; otherwise.default false</param>
     /// <typeparam name="TEntity">The type of entity</typeparam>
     /// <returns>Task&lt;TEntity&gt;  </returns>
-    Task<TEntity> QueryPrimaryKeyAsync(TEntity entity, bool useSqlSugarCache = false);
+    Task<TEntity> QueryPrimaryKeyAsync(TEntity entity);
 
     /// <summary>
     /// QueryPrimaryKeys - query entities by primaryKey
     /// </summary>
     /// <param name="entities">e.g. new List&lt;Order&gt;(){ new Order { Id = 1} } . the id column must has attr [SugarColumn(IsPrimaryKey=true)]）</param>
-    /// <param name="useSqlSugarCache">if <paramref name="useSqlSugarCache" /> was true; otherwise.default false</param>
     /// <returns>List&lt;TEntity&gt;</returns>
-    List<TEntity> QueryPrimaryKeys(List<TEntity> entities, bool useSqlSugarCache = false);
+    List<TEntity> QueryPrimaryKeys(List<TEntity> entities);
     
     /// <summary>
     /// QueryPrimaryKeysAsync - query entities by primaryKey
     /// </summary>
     /// <param name="entities">e.g. new List&lt;Order&gt;(){ new Order { Id = 1} } . the id column must has attr [SugarColumn(IsPrimaryKey=true)]）</param>
-    /// <param name="useSqlSugarCache">if <paramref name="useSqlSugarCache" /> was true; otherwise.default false</param>
     /// <returns>Task&lt;List&lt;TEntity&gt;&gt;</returns>
-    Task<List<TEntity>> QueryPrimaryKeysAsync(List<TEntity> entities, bool useSqlSugarCache = false);
+    Task<List<TEntity>> QueryPrimaryKeysAsync(List<TEntity> entities);
 
     /// <summary>
     /// Query - query entities by whereExpression and sort result by strOrderByFields
@@ -52,13 +48,11 @@ public interface IBaseRepository<TEntity> where TEntity : class
     /// <param name="whereExpression">if <paramref name="whereExpression" /> is null then query all entities</param>
     /// <param name="orderByExpression">if <paramref name="orderByExpression" /> is null then not sort</param>
     /// <param name="isAsc">sort type default Asc.must has orderByExpression</param>
-    /// <param name="useSqlSugarCache">if <paramref name="useSqlSugarCache" /> was true; otherwise.default false</param>
     /// <returns>List&lt;TEntity&gt;</returns>
     List<TEntity> Query(
         Expression<Func<TEntity, bool>>? whereExpression = null,
         Expression<Func<TEntity, object>>? orderByExpression = null,
-        bool isAsc = true,
-        bool useSqlSugarCache = false);
+        bool isAsc = true);
     
     /// <summary>
     /// QueryAsync - query entities by whereExpression and sort result by strOrderByFields
@@ -66,13 +60,11 @@ public interface IBaseRepository<TEntity> where TEntity : class
     /// <param name="whereExpression">if <paramref name="whereExpression" /> is null then query all entities</param>
     /// <param name="orderByExpression">if <paramref name="orderByExpression" /> is null then not sort</param>
     /// <param name="isAsc">sort type default Asc.must has orderByExpression</param>
-    /// <param name="useSqlSugarCache">if <paramref name="useSqlSugarCache" /> was true; otherwise.default false</param>
     /// <returns>Task&lt;List&lt;TEntity&gt;&gt;</returns>
     Task<List<TEntity>> QueryAsync(
         Expression<Func<TEntity, bool>>? whereExpression = null,
         Expression<Func<TEntity, object>>? orderByExpression = null,
-        bool isAsc = true,
-        bool useSqlSugarCache = false);
+        bool isAsc = true);
 
     /// <summary>
     /// QuerySql - query by sql
@@ -114,15 +106,13 @@ public interface IBaseRepository<TEntity> where TEntity : class
     /// <param name="isAsc">sort type default Asc.must has orderByExpression</param>
     /// <param name="startPage">default 1,is not index start 1 not 0</param>
     /// <param name="pageSize">pageSize</param>
-    /// <param name="useSqlSugarCache">if <paramref name="useSqlSugarCache" /> was true; otherwise.default false</param>
     /// <returns>List&lt;TEntity&gt;</returns>
     List<TEntity> QueryPaging(
         Expression<Func<TEntity, bool>>? whereExpression = null,
         Expression<Func<TEntity, object>>? orderByExpression = null,
         bool isAsc = true,
         int startPage = 1,
-        int pageSize = 20,
-        bool useSqlSugarCache = false);
+        int pageSize = 20);
     
     /// <summary>
     /// QueryPagingAsync - query entities by whereExpression and sort result by strOrderByFields then return toPageListAsync
@@ -132,15 +122,13 @@ public interface IBaseRepository<TEntity> where TEntity : class
     /// <param name="isAsc">sort type default Asc.must has orderByExpression</param>
     /// <param name="startPage">default 1,is not index start 1 not 0</param>
     /// <param name="pageSize">pageSize</param>
-    /// <param name="useSqlSugarCache">if <paramref name="useSqlSugarCache" /> was true; otherwise.default false</param>
     /// <returns>Task&lt;List&lt;DataTable&gt;&gt;</returns>
     Task<List<TEntity>> QueryPagingAsync(
         Expression<Func<TEntity, bool>>? whereExpression = null,
         Expression<Func<TEntity, object>>? orderByExpression = null,
         bool isAsc = true,
         int startPage = 1,
-        int pageSize = 20,
-        bool useSqlSugarCache = false);
+        int pageSize = 20);
 
     /// <summary>
     /// QueryViewModelPaging - query ViewModel&lt;TEntity&gt; by whereExpression and sort result by strOrderByFields then return toPageListAsync
@@ -150,15 +138,13 @@ public interface IBaseRepository<TEntity> where TEntity : class
     /// <param name="isAsc">sort type default Asc.must has orderByExpression</param>
     /// <param name="startPage">default 1,is not index start 1 not 0</param>
     /// <param name="pageSize">pageSize</param>
-    /// <param name="useSqlSugarCache">if <paramref name="useSqlSugarCache" /> was true; otherwise.default false</param>
     /// <returns>List&lt;TEntity&gt;</returns>
     ViewModel<TEntity> QueryViewModelPaging(
         Expression<Func<TEntity, bool>>? whereExpression = null,
         Expression<Func<TEntity, object>>? orderByExpression = null,
         bool isAsc = true,
         int startPage = 1,
-        int pageSize = 20,
-        bool useSqlSugarCache = false);
+        int pageSize = 20);
     
     /// <summary>
     /// QueryViewModelPagingAsync - query ViewModel&lt;TEntity&gt; by whereExpression and sort result by strOrderByFields then return toPageListAsync
@@ -168,15 +154,13 @@ public interface IBaseRepository<TEntity> where TEntity : class
     /// <param name="isAsc">sort type default Asc.must has orderByExpression</param>
     /// <param name="startPage">default 1,is not index start 1 not 0</param>
     /// <param name="pageSize">pageSize</param>
-    /// <param name="useSqlSugarCache">if <paramref name="useSqlSugarCache" /> was true; otherwise.default false</param>
     /// <returns>Task&lt;List&lt;TEntity&gt;&gt;</returns>
     Task<ViewModel<TEntity>> QueryViewModelPagingAsync(
         Expression<Func<TEntity, bool>>? whereExpression = null,
         Expression<Func<TEntity, object>>? orderByExpression = null,
         bool isAsc = true,
         int startPage = 1, 
-        int pageSize = 20, 
-        bool useSqlSugarCache = false);
+        int pageSize = 20);
 
     /// <summary>
     /// Add - add entity
@@ -288,4 +272,32 @@ public interface IBaseRepository<TEntity> where TEntity : class
     /// <param name="pageSize"></param>
     /// <returns>Task&lt;Identity&gt;</returns>
     Task<int> UpdateBulkEntitiesAsync(List<TEntity> entities, int? pageSize = null);
+
+    /// <summary>
+    /// QueryTree - query entity to tree struct
+    /// </summary>
+    /// <param name="childListExpression">childListExpression e.g. it=>it.Child    child in model is  [SqlSugar.SugarColumn(IsIgnore = true)]public List&lt;Tree&gt; Child { get; set; }</param>
+    /// <param name="parentIdExpression">parentIdExpression  e.g. it=>it.ParentId    ParentId in model is  public int ParentId { get; set; }//父级字段</param>
+    /// <param name="rootValue"> parentId is 0 or null ,default  top node pid is 0 or null</param>
+    /// <param name="childIds">primary key filter condition  e.g. object [] inIds=new object[]{11,12} </param>
+    /// <returns>List&lt;TEntity&gt;</returns>
+    List<TEntity> QueryTree(
+        Expression<Func<TEntity, IEnumerable<object>>> childListExpression,
+        Expression<Func<TEntity, object>> parentIdExpression,
+        object rootValue,
+        object[]? childIds = null);
+
+    /// <summary>
+    /// QueryTreeAsync - query entity to tree struct
+    /// </summary>
+    /// <param name="childListExpression">childListExpression e.g. it=>it.Child    child in model is  [SqlSugar.SugarColumn(IsIgnore = true)]public List&lt;Tree&gt; Child { get; set; }</param>
+    /// <param name="parentIdExpression">parentIdExpression  e.g. it=>it.ParentId    ParentId in model is  public int ParentId { get; set; }//父级字段</param>
+    /// <param name="rootValue"> parentId is 0 or null ,default  top node pid is 0 or null</param>
+    /// <param name="childIds">primary key filter condition  e.g. object [] inIds=new object[]{11,12} </param>
+    /// <returns>Task&lt;List&lt;DataTable&gt;&gt;</returns>
+    Task<List<TEntity>> QueryTreeAsync(
+        Expression<Func<TEntity, IEnumerable<object>>> childListExpression,
+        Expression<Func<TEntity, object>> parentIdExpression,
+        object rootValue,
+        object[]? childIds = null);
 }

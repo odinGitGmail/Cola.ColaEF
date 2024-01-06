@@ -40,7 +40,4 @@
       <ProjectReference Include="..\Cola.CoreUtils\Cola.CoreUtils.csproj" />
       <ProjectReference Include="..\Cola.Core\Cola.Core.csproj" />
     </ItemGroup>
-    <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-      <Exec Command="dotnet restore" />
-    </Target>
 </Project>

@@ -1,13 +1,17 @@
 ﻿using Cola.ColaEF.BaseUnitOfWork;
+using Cola.ColaEF.EFRepository;
+using Cola.ColaEF.EntityBase;
 using Cola.ColaEF.Models;
 using Cola.ColaEF.Tenant;
 using Cola.Core.ColaConsole;
 using Cola.Core.ColaException;
 using Cola.Core.Models.ColaEF;
 using Cola.Core.Utils.Constants;
+using Cola.CoreUtils.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using SqlSugar;
 
 namespace Cola.ColaEF.EFInject;
@@ -57,8 +61,6 @@ public static class SqlSugarInject
     {
         // 配置参数验证
         ValidateColaEfConfigOption(services, colaEfConfigOption);
-        services.AddSingleton<ITenantResolutionStrategy, DomainTenantResolutionStrategy>();
-        services.AddSingleton<ITenantContext>(sp => TenantContext.Create(sp,configuration,aopOnLogExecutingModels,aopOnErrorModels,tableFilter));
         
         var sqlSugarConfigLst = new List<ConnectionConfig>();
         for (var i = 0; i < colaEfConfigOption.ColaOrmConfig!.Count; i++)
@@ -82,20 +84,119 @@ public static class SqlSugarInject
         ValidateAopOnError(services, sqlSugarConfigLst, colaEfConfigOption, aopOnErrorModels);
 
         #endregion
-
-        InjectTenantResolutionStrategy(services, httpContextAccessor, configuration, colaEfConfigOption);
         
-        services.AddSingleton<IUnitOfWork,UnitOfWork>();
-        // if (sqlSugarConfigLst.Count > 0)
-        // {
-        //     services.AddSingleton<EFRepository.IBaseRepository>(SqlSugarRepository.Create);
-        //     ConsoleHelper.WriteInfo("注入类型【 ISqlSugarRepository, SqlSugarRepository 】");
-        // }
-        // else
-        // {
-        //     ConsoleHelper.WriteException("SqlSugar配置不正确，无法类型【 ISqlSugarRepository, SqlSugarRepository 】");
-        // }
+        // ISqlSugarClient 注入
+        services.AddSingleton<ISqlSugarClient>(s =>
+        {
+            var connectionConfigs = new List<ConnectionConfig>();
+            foreach (var config in colaEfConfigOption.ColaOrmConfig!)
+            {
+                var connectionConfig = new ConnectionConfig
+                {
+                    ConfigId = config.ConfigId,
+                    // 配置连接字符串
+                    ConnectionString = config.ConnectionString,
+                    DbType = config.DbType!.ConvertStringToEnum<DbType>(),
+                    IsAutoCloseConnection = config.IsAutoCloseConnection,
+                    InitKeyType = InitKeyType.Attribute
+                };
+                connectionConfigs.Add(connectionConfig);
+            }
 
+            var sqlSugarScope = new SqlSugarScope(
+                connectionConfigs,
+                sqlSugarClient =>
+                {
+                    foreach (var connectionConfig in connectionConfigs)
+                    {
+                        var client = sqlSugarClient.GetConnection(connectionConfig.ConfigId);
+                        var config = colaEfConfigOption.ColaOrmConfig.Single(c => c.ConfigId == connectionConfig.ConfigId);
+
+                        #region OnLogExecuting
+
+                        if (config.EnableLogAop)
+                        {
+                            if (aopOnLogExecutingModels != null)
+                            {
+                                var aopOnLogExecutingModel =
+                                    aopOnLogExecutingModels.SingleOrDefault(m => m.ConfigId == config.ConfigId);
+                                if (aopOnLogExecutingModel != null)
+                                {
+                                    client.Aop.OnLogExecuting = aopOnLogExecutingModel.AopOnLogExecuting!;
+                                }
+
+                            }
+                            else
+                            {
+                                (client.Aop as AopProvider)!.OnLogExecuting = (sql, parameters) =>
+                                {
+                                    ConsoleHelper.WriteInfo($"sql:\n\t{sql}");
+                                    ConsoleHelper.WriteInfo("parameters is :");
+                                    foreach (var parameter in parameters)
+                                    {
+                                        if (parameter.Value != null)
+                                            Console.WriteLine(
+                                                $"\tparameter name:{parameter.ParameterName}\tparameter value:{parameter.Value.ToString()}");
+                                    }
+                                };
+                            }
+                        }
+
+                        #endregion
+
+                        #region OnError
+
+                        if (config.EnableErrorAop)
+                        {
+                            if (aopOnErrorModels != null)
+                            {
+                                var aopOnErrorModel =
+                                    aopOnErrorModels.SingleOrDefault(m => m.ConfigId == config.ConfigId);
+                                if (aopOnErrorModel != null && aopOnErrorModel.AopOnError != null)
+                                {
+                                    client.Aop.OnError = aopOnErrorModel.AopOnError;
+                                }
+                            }
+                            else
+                            {
+                                (client.Aop as AopProvider)!.OnError = exception =>
+                                {
+                                    ConsoleHelper.WriteException($"Sql Error:");
+                                    ConsoleHelper.WriteException(JsonConvert.SerializeObject(exception)
+                                        .ToJsonFormatString());
+                                };
+                            }
+                        }
+
+                        #endregion
+
+                        #region GlobalFilter
+
+                        if (config.EnableGlobalFilter)
+                        {
+                            if (tableFilter != null)
+                            {
+                                var globalQueryFilter = tableFilter.SingleOrDefault(m => m.ConfigId == config.ConfigId);
+                                if (globalQueryFilter != null)
+                                {
+                                    globalQueryFilter.QueryFilter!(client.QueryFilter);
+                                }
+                            }
+                            else
+                            {
+                                (client.QueryFilter as QueryFilterProvider)!.AddTableFilter<IDeleted>(t =>
+                                    t.IsDelete == false);
+                            }
+                        }
+
+                        #endregion
+                    }
+                });
+            return sqlSugarScope;
+        });
+        InjectTenantResolutionStrategy(services, httpContextAccessor, configuration, colaEfConfigOption);
+        services.AddSingleton<ITenantContext, TenantContext>();
+        services.AddSingleton<IUnitOfWork,UnitOfWork>();
         return services;
     }
 

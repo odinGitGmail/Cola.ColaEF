@@ -6,10 +6,5 @@ namespace Cola.ColaEF.BaseUnitOfWork;
 /// </summary>
 public interface IUnitOfWork
 {
-    SqlSugarClient GetDbClient();
-
-    void BeginTran();
-
-    void CommitTran();
-    void RollbackTran();
+    ISqlSugarClient GetDbClient();
 }

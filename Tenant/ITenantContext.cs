@@ -1,4 +1,5 @@
 ﻿using Cola.ColaEF.Models;
+using Microsoft.Extensions.DependencyInjection;
 using SqlSugar;
 
 namespace Cola.ColaEF.Tenant;
@@ -8,8 +9,6 @@ namespace Cola.ColaEF.Tenant;
 /// </summary>
 public interface ITenantContext
 {
-    void SetDbClientByTenant(List<AopOnLogExecutingModel>? aopOnLogExecutingModels,
-        List<AopOnErrorModel>? aopOnErrorModels, List<GlobalQueryFilter>? globalQueryFilters);
-    
-    SqlSugarClient GetDbClientByTenant();
+    ISqlSugarClient GetMainDb();
+    ISqlSugarClient GetDbClientByTenant();
 }

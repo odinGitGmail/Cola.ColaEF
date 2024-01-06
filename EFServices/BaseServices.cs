@@ -15,42 +15,40 @@ public class BaseServices<TEntity> : IBaseServices<TEntity> where TEntity : clas
     //通过在子类的构造函数中注入，这里是基类，不用构造函数
     protected readonly IBaseRepository<TEntity> baseRepository;
 
-    public TEntity QueryPrimaryKey(TEntity entity, bool useSqlSugarCache = false)
+    public TEntity QueryPrimaryKey(TEntity entity)
     {
-        return baseRepository.QueryPrimaryKey(entity, useSqlSugarCache);
+        return baseRepository.QueryPrimaryKey(entity);
     }
 
-    public Task<TEntity> QueryPrimaryKeyAsync(TEntity entity, bool useSqlSugarCache = false)
+    public Task<TEntity> QueryPrimaryKeyAsync(TEntity entity)
     {
-        return baseRepository.QueryPrimaryKeyAsync(entity, useSqlSugarCache);
+        return baseRepository.QueryPrimaryKeyAsync(entity);
     }
 
-    public List<TEntity> QueryPrimaryKeys(List<TEntity> entities, bool useSqlSugarCache = false)
+    public List<TEntity> QueryPrimaryKeys(List<TEntity> entities)
     {
-        return baseRepository.QueryPrimaryKeys(entities, useSqlSugarCache);
+        return baseRepository.QueryPrimaryKeys(entities);
     }
 
-    public Task<List<TEntity>> QueryPrimaryKeysAsync(List<TEntity> entities, bool useSqlSugarCache = false)
+    public Task<List<TEntity>> QueryPrimaryKeysAsync(List<TEntity> entities)
     {
-        return baseRepository.QueryPrimaryKeysAsync(entities, useSqlSugarCache);
+        return baseRepository.QueryPrimaryKeysAsync(entities);
     }
 
     public List<TEntity> Query(
         Expression<Func<TEntity, bool>>? whereExpression = null,
         Expression<Func<TEntity, object>>? orderByExpression = null,
-        bool isAsc = true,
-        bool useSqlSugarCache = false)
+        bool isAsc = true)
     {
-        return baseRepository.Query(whereExpression, orderByExpression, isAsc, useSqlSugarCache);
+        return baseRepository.Query(whereExpression, orderByExpression, isAsc);
     }
 
     public Task<List<TEntity>> QueryAsync(
         Expression<Func<TEntity, bool>>? whereExpression = null,
         Expression<Func<TEntity, object>>? orderByExpression = null,
-        bool isAsc = true,
-        bool useSqlSugarCache = false)
+        bool isAsc = true)
     {
-        return baseRepository.QueryAsync(whereExpression, orderByExpression, isAsc, useSqlSugarCache);
+        return baseRepository.QueryAsync(whereExpression, orderByExpression, isAsc);
     }
 
     public List<TEntity> QuerySql(string strSql, SugarParameter[]? parameters = null)
@@ -78,16 +76,14 @@ public class BaseServices<TEntity> : IBaseServices<TEntity> where TEntity : clas
         Expression<Func<TEntity, object>>? orderByExpression = null,
         bool isAsc = true,
         int startPage = 1,
-        int pageSize = 20,
-        bool useSqlSugarCache = false)
+        int pageSize = 20)
     {
         return baseRepository.QueryPaging(
             whereExpression,
             orderByExpression,
             isAsc,
             startPage,
-            pageSize,
-            useSqlSugarCache);
+            pageSize);
     }
 
     public Task<List<TEntity>> QueryPagingAsync(
@@ -95,16 +91,14 @@ public class BaseServices<TEntity> : IBaseServices<TEntity> where TEntity : clas
         Expression<Func<TEntity, object>>? orderByExpression = null,
         bool isAsc = true,
         int startPage = 1,
-        int pageSize = 20,
-        bool useSqlSugarCache = false)
+        int pageSize = 20)
     {
         return baseRepository.QueryPagingAsync(
             whereExpression,
             orderByExpression,
             isAsc,
             startPage,
-            pageSize,
-            useSqlSugarCache);
+            pageSize);
     }
 
     public ViewModel<TEntity> QueryViewModelPaging(
@@ -112,16 +106,14 @@ public class BaseServices<TEntity> : IBaseServices<TEntity> where TEntity : clas
         Expression<Func<TEntity, object>>? orderByExpression = null,
         bool isAsc = true,
         int startPage = 1,
-        int pageSize = 20,
-        bool useSqlSugarCache = false)
+        int pageSize = 20)
     {
         return baseRepository.QueryViewModelPaging(
             whereExpression,
             orderByExpression,
             isAsc,
             startPage,
-            pageSize,
-            useSqlSugarCache);
+            pageSize);
     }
 
     public Task<ViewModel<TEntity>> QueryViewModelPagingAsync(
@@ -129,16 +121,14 @@ public class BaseServices<TEntity> : IBaseServices<TEntity> where TEntity : clas
         Expression<Func<TEntity, object>>? orderByExpression = null,
         bool isAsc = true,
         int startPage = 1,
-        int pageSize = 20,
-        bool useSqlSugarCache = false)
+        int pageSize = 20)
     {
         return baseRepository.QueryViewModelPagingAsync(
             whereExpression,
             orderByExpression,
             isAsc,
             startPage,
-            pageSize,
-            useSqlSugarCache);
+            pageSize);
     }
 
     public int Add(TEntity entity)
@@ -146,9 +136,9 @@ public class BaseServices<TEntity> : IBaseServices<TEntity> where TEntity : clas
         return baseRepository.Add(entity);
     }
 
-    public Task<int> AddAsync(TEntity entity)
+    public async Task<int> AddAsync(TEntity entity)
     {
-        return baseRepository.AddAsync(entity);
+        return await baseRepository.AddAsync(entity);
     }
 
     public int AddListEntities(List<TEntity> entities)
@@ -156,9 +146,9 @@ public class BaseServices<TEntity> : IBaseServices<TEntity> where TEntity : clas
         return baseRepository.AddListEntities(entities);
     }
 
-    public Task<int> AddListEntitiesAsync(List<TEntity> entities)
+    public async Task<int> AddListEntitiesAsync(List<TEntity> entities)
     {
-        return baseRepository.AddListEntitiesAsync(entities);
+        return await baseRepository.AddListEntitiesAsync(entities);
     }
 
     public int AddBulkEntities(List<TEntity> entities, int? pageSize = null)
@@ -166,9 +156,9 @@ public class BaseServices<TEntity> : IBaseServices<TEntity> where TEntity : clas
         return baseRepository.AddBulkEntities(entities, pageSize);
     }
 
-    public Task<int> AddBulkEntitiesAsync(List<TEntity> entities, int? pageSize = null)
+    public async Task<int> AddBulkEntitiesAsync(List<TEntity> entities, int? pageSize = null)
     {
-        return baseRepository.AddBulkEntitiesAsync(entities, pageSize);
+        return await baseRepository.AddBulkEntitiesAsync(entities, pageSize);
     }
 
     public bool DeleteEntityById(object id)
@@ -176,9 +166,9 @@ public class BaseServices<TEntity> : IBaseServices<TEntity> where TEntity : clas
         return baseRepository.DeleteEntityById(id);
     }
 
-    public Task<bool> DeleteEntityByIdAsync(object id)
+    public async Task<bool> DeleteEntityByIdAsync(object id)
     {
-        return baseRepository.DeleteEntityByIdAsync(id);
+        return await baseRepository.DeleteEntityByIdAsync(id);
     }
 
     public bool Delete(TEntity entity)
@@ -186,9 +176,9 @@ public class BaseServices<TEntity> : IBaseServices<TEntity> where TEntity : clas
         return baseRepository.Delete(entity);
     }
 
-    public Task<bool> DeleteAsync(TEntity entity)
+    public async Task<bool> DeleteAsync(TEntity entity)
     {
-        return baseRepository.DeleteAsync(entity);
+        return await baseRepository.DeleteAsync(entity);
     }
 
     public bool DeleteEntitiesByIds(object[] ids)
@@ -196,9 +186,9 @@ public class BaseServices<TEntity> : IBaseServices<TEntity> where TEntity : clas
         return baseRepository.DeleteEntitiesByIds(ids);
     }
 
-    public Task<bool> DeleteEntitiesByIdsAsync(object[] ids)
+    public async Task<bool> DeleteEntitiesByIdsAsync(object[] ids)
     {
-        return baseRepository.DeleteEntitiesByIdsAsync(ids);
+        return await baseRepository.DeleteEntitiesByIdsAsync(ids);
     }
 
     public bool Update(TEntity entity)
@@ -206,9 +196,9 @@ public class BaseServices<TEntity> : IBaseServices<TEntity> where TEntity : clas
         return baseRepository.Update(entity);
     }
 
-    public Task<bool> UpdateAsync(TEntity entity)
+    public async Task<bool> UpdateAsync(TEntity entity)
     {
-        return baseRepository.UpdateAsync(entity);
+        return await baseRepository.UpdateAsync(entity);
     }
 
     public int UpdateBulkEntities(List<TEntity> entities, int? pageSize = null)
@@ -216,8 +206,8 @@ public class BaseServices<TEntity> : IBaseServices<TEntity> where TEntity : clas
         return baseRepository.UpdateBulkEntities(entities, pageSize);
     }
 
-    public Task<int> UpdateBulkEntitiesAsync(List<TEntity> entities, int? pageSize = null)
+    public async Task<int> UpdateBulkEntitiesAsync(List<TEntity> entities, int? pageSize = null)
     {
-        return baseRepository.UpdateBulkEntitiesAsync(entities, pageSize);
+        return await baseRepository.UpdateBulkEntitiesAsync(entities, pageSize);
     }
 }
