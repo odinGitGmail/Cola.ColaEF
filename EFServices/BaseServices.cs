@@ -210,4 +210,16 @@ public class BaseServices<TEntity> : IBaseServices<TEntity> where TEntity : clas
     {
         return await baseRepository.UpdateBulkEntitiesAsync(entities, pageSize);
     }
+
+    public List<TEntity> QueryTree(Expression<Func<TEntity, IEnumerable<object>>> childListExpression, Expression<Func<TEntity, object>> parentIdExpression, object rootValue,
+        object[]? childIds = null)
+    {
+        return baseRepository.QueryTree(childListExpression, parentIdExpression, rootValue, childIds);
+    }
+
+    public async Task<List<TEntity>> QueryTreeAsync(Expression<Func<TEntity, IEnumerable<object>>> childListExpression, Expression<Func<TEntity, object>> parentIdExpression, object rootValue,
+        object[]? childIds = null)
+    {
+        return await baseRepository.QueryTreeAsync(childListExpression, parentIdExpression, rootValue, childIds);
+    }
 }

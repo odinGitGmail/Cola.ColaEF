@@ -271,4 +271,32 @@ public interface IBaseServices<TEntity> where TEntity : class
     /// <returns>Task&lt;Identity&gt;</returns>
     Task<int> UpdateBulkEntitiesAsync(List<TEntity> entities, int? pageSize = null);
     
+    /// <summary>
+    /// QueryTree - query entity to tree struct
+    /// </summary>
+    /// <param name="childListExpression">childListExpression e.g. it=>it.Child    child in model is  [SqlSugar.SugarColumn(IsIgnore = true)]public List&lt;Tree&gt; Child { get; set; }</param>
+    /// <param name="parentIdExpression">parentIdExpression  e.g. it=>it.ParentId    ParentId in model is  public int ParentId { get; set; }//父级字段</param>
+    /// <param name="rootValue"> parentId is 0 or null ,default  top node pid is 0 or null</param>
+    /// <param name="childIds">primary key filter condition  e.g. object [] inIds=new object[]{11,12} </param>
+    /// <returns>List&lt;TEntity&gt;</returns>
+    List<TEntity> QueryTree(
+        Expression<Func<TEntity, IEnumerable<object>>> childListExpression,
+        Expression<Func<TEntity, object>> parentIdExpression,
+        object rootValue,
+        object[]? childIds = null);
+
+    /// <summary>
+    /// QueryTreeAsync - query entity to tree struct
+    /// </summary>
+    /// <param name="childListExpression">childListExpression e.g. it=>it.Child    child in model is  [SqlSugar.SugarColumn(IsIgnore = true)]public List&lt;Tree&gt; Child { get; set; }</param>
+    /// <param name="parentIdExpression">parentIdExpression  e.g. it=>it.ParentId    ParentId in model is  public int ParentId { get; set; }//父级字段</param>
+    /// <param name="rootValue"> parentId is 0 or null ,default  top node pid is 0 or null</param>
+    /// <param name="childIds">primary key filter condition  e.g. object [] inIds=new object[]{11,12} </param>
+    /// <returns>Task&lt;List&lt;DataTable&gt;&gt;</returns>
+    Task<List<TEntity>> QueryTreeAsync(
+        Expression<Func<TEntity, IEnumerable<object>>> childListExpression,
+        Expression<Func<TEntity, object>> parentIdExpression,
+        object rootValue,
+        object[]? childIds = null);
+    
 }

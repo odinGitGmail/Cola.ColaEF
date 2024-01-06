@@ -4,8 +4,8 @@
 
 ### 简介
     框架使用仓储模式方便简单，实现了常用接口。并支持多租户，有 RouteValueTenant、HttpHeaderTenant、DomainTenant 以及 NoTenant 多种策略。
-    
-##### 1. 注入
+
+##### 注入
 
 注入可以通过config配置文件形式注入（推荐）、也可以通过代码直接注入
 
@@ -73,7 +73,7 @@ builder.Services.AddSingletonColaSqlSugar(config,new HttpContextAccessor(),
     );
 ```
 
-##### 2. 新建 IOdinLogRepository 和 OdinLogRepository
+##### 新建 IOdinLogRepository 和 OdinLogRepository
 ```csharp
 public interface IOdinLogRepository : IBaseRepository<OdinLog>
 {
@@ -88,7 +88,7 @@ public class OdinLogRepository : BaseRepository<OdinLog>, IOdinLogRepository
 }
 ```
 
-##### 3. 新建 OdinLog 实体 和 其他相关定义
+##### 新建 OdinLog 实体 和 其他相关定义
 框架 SqlSugarEntityBase<T> 默认定义了实体的相关标识列。可以不使用自己定义。T 类型灵活定义实体的主键类型。
 IDeleted 用来标识实体是否被删除。框架默认使用IsDelete字段。
 
@@ -136,7 +136,7 @@ public class SqlSugarEntityBase<T> : IEntityBase<T>, IDeleted
     
 }
 ```
-自定义 IStatus 标识实体是否被删除字段。
+##### 自定义 IStatus 标识实体是否被删除字段。
 ```csharp
 public interface IStatus
 {
@@ -144,7 +144,7 @@ public interface IStatus
 }
 ```
 
-定义实体类 OdinLog MOdel
+##### 定义实体类 OdinLog MOdel
 ```csharp OdinLog MOdel 
 [SugarTable("tb_OdinLog")]
 public class OdinLog : SqlSugarEntityBase<long>, IStatus
@@ -154,50 +154,103 @@ public class OdinLog : SqlSugarEntityBase<long>, IStatus
     public string? ExceptionInfo { get; set; }
 }
 
+// tree类型 实体 用于树查询
+public class Tree
+{
+               
+   [SqlSugar.SugarColumn(IsPrimaryKey =true)]
+   public int Id { get; set; } //关联字段 默认是主键
+   public string Name { get; set; }
+   public int ParentId { get; set; }//父级字段
+   [SqlSugar.SugarColumn(IsIgnore = true)]
+   public List<Tree> Child { get; set; }
+}
 
 ```
 
-##### 3. 新建 IOdinServices 和 OdinServices
+##### 新建 IOdinServices 和 OdinServices
 ```csharp
 public interface IOdinServices : IBaseServices<OdinLog>
 {
     // 模拟services业务接口
     List<OdinLog> QueryLog();
+    
+    // 事务查询
+    Task Trans(OdinLog log1,OdinLog log2);
+    
+    // 树查询
+    Task<List<Tree>> QueryTreeAsync();
 }
 
 public class OdinServices : BaseServices<OdinLog>, IOdinServices
 {
     private readonly IOdinLogRepository _odinLogRepository;
-    // 如果需要复杂操作 可以使用 ISqlSugarClient
-    private readonly ISqlSugarClient _sqlSugarClient;
-    public OdinServices(IOdinLogRepository odinLogRepository)
+    // 主库 多租户事务异步调用必须使用主库 而不能用字库
+    private readonly ISqlSugarClient _mainDb;
+    // 当前库
+    private readonly ISqlSugarClient _db;
+    public OdinServices(IUnitOfWork unitOfWork, IOdinLogRepository odinLogRepository)
     {
         _odinLogRepository = odinLogRepository;
-        _sqlSugarClient = _odinLogRepository.DbClient;
+        _db = _odinLogRepository.DbClient;
+        _mainDb = _db.DbMaintenance.Context.Root;
+
     }
     // 模拟实现业务接口
     public List<OdinLog> QueryLog()
     {
         return _odinLogRepository.Query();
     }
+    
+    // 多租户事务调用
+    public async Task Trans(OdinLog log1,OdinLog log2)
+    {
+        var result = await _mainDb.AsTenant().UseTranAsync(async () =>
+        {
+            await EditOdinLog(log1);
+            var i = 0;
+            var a = 1 / i;
+            await EditOdinLog(log2);
+            return true;//返回值会变成 res.Data
+        });
+        if (result.Data) //返回值为false
+        {
+            Console.WriteLine("trans ok");
+        }
+        else
+        {
+            Console.WriteLine("trans error");
+            Console.WriteLine($"result.IsSuccess:{result.IsSuccess}");
+            Console.WriteLine(result.ErrorMessage);
+        }
+    }
+    
+    // 树查询
+    public async Task<List<Tree>> QueryTreeAsync()
+    {
+        object[] inIds = new object[] { 11, 12 };
+        return await _odinLogRepository.QueryTreeAsync(it => it.Child, it => it.ParentId, 0, inIds);
+    }
 }
 ```
-##### 4. 注入仓储
+##### 注入仓储
 ```csharp
 builder.Services.AddSingleton<IOdinLogRepository, OdinLogRepository>();
 builder.Services.AddSingleton<IOdinServices, OdinServices>();
 ```
 
-##### 5. 模拟 controller 获取 IOdinServices
+##### 模拟 controller 获取 IOdinServices
 ```csharp
 var odinServices = builder.Services.BuildServiceProvider().GetService<IOdinServices>();
 ```
 
-##### 6. 调用业务方法获取数据
+##### 调用业务方法获取数据
 ```csharp
 var sqlResult = odinServices.QueryLog();
 Console.WriteLine($"query count:{sqlResult.Count}");
 if (sqlResult.Count > 0) Console.WriteLine(JsonConvert.SerializeObject(sqlResult[0]).ToJsonFormatString());
+
+var tree = await odinServices.QueryTree();
 ```
 
 ```text console wirete query result
@@ -220,7 +273,34 @@ query count:7
 
 ```
 
-##### 7. 仓储已经默认实现的接口
+##### 事务调用
+```csharp
+builder.Services.AddSingleton<IOdinLogRepository, OdinLogRepository>();
+builder.Services.AddSingleton<IOdinServices, OdinServices>();
+var odinServices = builder.Services.BuildServiceProvider().GetService<IOdinServices>();
+var e1 = odinServices.QueryLogById(337152753199616000);
+Console.WriteLine(e1.Remark);
+e1.Remark = "e111";
+var e2 = odinServices.QueryLogById(337152798942695424);
+Console.WriteLine(e2.Remark);
+e2.Remark = "e222";
+try
+{
+    await odinServices.Trans(e1, e2);
+}
+catch (Exception exception)
+{
+    Console.WriteLine(exception);
+}
+e1 = odinServices.QueryLogById(337152753199616000);
+Console.WriteLine(e1.Remark);
+e2 = odinServices.QueryLogById(337152798942695424);
+Console.WriteLine(e2.Remark);
+
+Console.WriteLine();Console.WriteLine();
+```
+
+##### 仓储已经默认实现的接口
 
 ```csharp
 /// <summary>
@@ -505,6 +585,34 @@ public interface IBaseServices<TEntity> where TEntity : class
     /// <param name="pageSize"></param>
     /// <returns>Task&lt;Identity&gt;</returns>
     Task<int> UpdateBulkEntitiesAsync(List<TEntity> entities, int? pageSize = null);
+    
+    /// <summary>
+    /// QueryTree - query entity to tree struct
+    /// </summary>
+    /// <param name="childListExpression">childListExpression e.g. it=>it.Child    child in model is  [SqlSugar.SugarColumn(IsIgnore = true)]public List&lt;Tree&gt; Child { get; set; }</param>
+    /// <param name="parentIdExpression">parentIdExpression  e.g. it=>it.ParentId    ParentId in model is  public int ParentId { get; set; }//父级字段</param>
+    /// <param name="rootValue"> parentId is 0 or null ,default  top node pid is 0 or null</param>
+    /// <param name="childIds">primary key filter condition  e.g. object [] inIds=new object[]{11,12} </param>
+    /// <returns>List&lt;TEntity&gt;</returns>
+    List<TEntity> QueryTree(
+        Expression<Func<TEntity, IEnumerable<object>>> childListExpression,
+        Expression<Func<TEntity, object>> parentIdExpression,
+        object rootValue,
+        object[]? childIds = null);
+
+    /// <summary>
+    /// QueryTreeAsync - query entity to tree struct
+    /// </summary>
+    /// <param name="childListExpression">childListExpression e.g. it=>it.Child    child in model is  [SqlSugar.SugarColumn(IsIgnore = true)]public List&lt;Tree&gt; Child { get; set; }</param>
+    /// <param name="parentIdExpression">parentIdExpression  e.g. it=>it.ParentId    ParentId in model is  public int ParentId { get; set; }//父级字段</param>
+    /// <param name="rootValue"> parentId is 0 or null ,default  top node pid is 0 or null</param>
+    /// <param name="childIds">primary key filter condition  e.g. object [] inIds=new object[]{11,12} </param>
+    /// <returns>Task&lt;List&lt;DataTable&gt;&gt;</returns>
+    Task<List<TEntity>> QueryTreeAsync(
+        Expression<Func<TEntity, IEnumerable<object>>> childListExpression,
+        Expression<Func<TEntity, object>> parentIdExpression,
+        object rootValue,
+        object[]? childIds = null);
 }
 ```
 
