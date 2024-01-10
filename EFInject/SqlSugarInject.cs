@@ -37,7 +37,7 @@ public static class SqlSugarInject
         List<AopOnErrorModel>? aopOnErrorModels = null)
     {
         var colaEfConfig = configuration.GetSection(SystemConstant.CONSTANT_COLAORM_SECTION).Get<ColaEfConfigOption>();
-        colaEfConfig = colaEfConfig ?? new ColaEfConfigOption();
+        colaEfConfig ??= new ColaEfConfigOption();
         var opts = new ColaEfConfigOption
         {
             TenantResolutionStrategy = colaEfConfig.TenantResolutionStrategy,
