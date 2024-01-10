@@ -18,7 +18,7 @@ namespace Cola.ColaEF.EFInject;
 
 public static class SqlSugarInject
 {
-    public static IServiceCollection AddSingletonColaSqlSugar(
+    public static IServiceCollection AddColaSqlSugar(
         this IServiceCollection services,
         IConfiguration configuration,
         IHttpContextAccessor httpContextAccessor,
@@ -29,10 +29,12 @@ public static class SqlSugarInject
     {
         var opts = new ColaEfConfigOption();
         action(opts);
-        return InjectSqlSugar(services, opts, httpContextAccessor, configuration, tableFilter, aopOnLogExecutingModels, aopOnErrorModels);
+        services = InjectSqlSugar(services, opts, httpContextAccessor, configuration, tableFilter, aopOnLogExecutingModels, aopOnErrorModels);
+        ConsoleHelper.WriteInfo("ColaSqlSugar 注入类型【 ISqlSugarClient 】");
+        return services;
     }
 
-    public static IServiceCollection AddSingletonColaSqlSugar(
+    public static IServiceCollection AddColaSqlSugar(
         this IServiceCollection services,
         IConfiguration configuration,
         IHttpContextAccessor httpContextAccessor,
@@ -47,7 +49,9 @@ public static class SqlSugarInject
             TenantResolutionStrategy = colaEfConfig.TenantResolutionStrategy,
             ColaOrmConfig = colaEfConfig.ColaOrmConfig
         };
-        return InjectSqlSugar(services, opts, httpContextAccessor, configuration, tableFilter, aopOnLogExecutingModels, aopOnErrorModels);
+        services = InjectSqlSugar(services, opts, httpContextAccessor, configuration, tableFilter, aopOnLogExecutingModels, aopOnErrorModels);
+        ConsoleHelper.WriteInfo("ColaSqlSugar 注入类型【 ISqlSugarClient 】");
+        return services;
     }
 
     private static IServiceCollection InjectSqlSugar(
