@@ -31,7 +31,7 @@ public class DomainTenantResolutionStrategy : ITenantResolutionStrategy
     public string ResolveTenantKey()
     {
         var domain = GetTenantResolutionKey();
-        var colaOrmConfig = _configuration.GetSection(SystemConstant.CONSTANT_COLAORM_SECTION).Get<List<ColaEfConfig>>();
+        var colaOrmConfig = _configuration.GetColaSection<List<ColaEfConfig>>(SystemConstant.CONSTANT_COLAORM_SECTION);
         var config = colaOrmConfig.SingleOrDefault(d => d.Domain != null && d.Domain.StringCompareIgnoreCase(domain));
         if (config == null) throw new ArgumentException($"{domain} 无法找到对应的 tenant租户id");
         if (!int.TryParse(config.ConfigId, out var tenantId))

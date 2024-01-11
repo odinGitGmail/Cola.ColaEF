@@ -27,7 +27,7 @@ public class TenantContext : ITenantContext
         List<GlobalQueryFilter>? globalQueryFilters)
     {
         _tenantResolutionStrategy = tenantResolutionStrategy;
-        _efConfig = configuration.GetSection(SystemConstant.CONSTANT_COLAORM_SECTION).Get<ColaEfConfigOption>();
+        _efConfig = configuration.GetColaSection<ColaEfConfigOption>(SystemConstant.CONSTANT_COLAORM_SECTION);
         _colaException = colaException;
         SetDbClientByTenant(aopOnLogExecutingModels, aopOnErrorModels, globalQueryFilters);
     }

@@ -5,6 +5,7 @@ using Cola.Core.ColaConsole;
 using Cola.Core.ColaException;
 using Cola.Core.Models.ColaEF;
 using Cola.Core.Utils.Constants;
+using Cola.CoreUtils.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,7 +37,7 @@ public static class SqlSugarInject
         List<AopOnLogExecutingModel>? aopOnLogExecutingModels = null,
         List<AopOnErrorModel>? aopOnErrorModels = null)
     {
-        var colaEfConfig = configuration.GetSection(SystemConstant.CONSTANT_COLAORM_SECTION).Get<ColaEfConfigOption>();
+        var colaEfConfig = configuration.GetColaSection<ColaEfConfigOption>(SystemConstant.CONSTANT_COLAORM_SECTION);
         colaEfConfig ??= new ColaEfConfigOption();
         var opts = new ColaEfConfigOption
         {
