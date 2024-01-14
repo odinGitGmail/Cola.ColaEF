@@ -154,7 +154,6 @@ public class OdinLog : SqlSugarEntityBase<long>, IStatus
     public string? ExceptionInfo { get; set; }
 }
 
-
 ```
 
 ##### 3. 新建 IOdinServices 和 OdinServices
