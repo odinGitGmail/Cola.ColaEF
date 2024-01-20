@@ -104,7 +104,7 @@ public interface IBaseRepository<TEntity> where TEntity : class
     /// <param name="whereExpression">if <paramref name="whereExpression" /> is null then query all entities</param>
     /// <param name="orderByExpression">if <paramref name="orderByExpression" /> is null then not sort</param>
     /// <param name="isAsc">sort type default Asc.must has orderByExpression</param>
-    /// <param name="startPage">default 1,is not index start 1 not 0</param>
+    /// <param name="startPage">default 1,is not index. start 1 not 0</param>
     /// <param name="pageSize">pageSize</param>
     /// <returns>List&lt;TEntity&gt;</returns>
     List<TEntity> QueryPaging(

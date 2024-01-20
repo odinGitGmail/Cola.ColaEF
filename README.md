@@ -35,7 +35,7 @@
 
 ```csharp
 // 注入 ColaSqlSugar
-builder.Services.AddSingletonColaSqlSugar(config,new HttpContextAccessor(),
+builder.Services.AddColaSqlSugar(config,new HttpContextAccessor(),
         tableFilter:(new List<GlobalQueryFilter>()
         {
             new GlobalQueryFilter()
