@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using Cola.Core.ColaException;
 using Cola.Core.Models.ColaEF;
-using Cola.Core.Utils.Constants;
+using Cola.CoreUtils.Constants;
 using Cola.CoreUtils.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
