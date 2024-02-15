@@ -7,6 +7,7 @@ using Cola.Core.ColaConsole;
 using Cola.Core.ColaException;
 using Cola.Core.Models.ColaEF;
 using Cola.CoreUtils.Constants;
+using Cola.CoreUtils.Enums;
 using Cola.CoreUtils.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -227,11 +228,11 @@ public static class SqlSugarInject
         if (aopOnLogExecutingModels != null)
         {
             if (aopOnLogExecutingModels.Count != sqlSugarConfigLst.Count)
-                exceptionHelper!.ThrowException("AopOnLogExecuting 个数配置不正确");
+                exceptionHelper!.ThrowException(EnumException.SqlSugarAopExecutingParamNumberFailed);
             for (var i = 0; i < aopOnLogExecutingModels.Count; i++)
             {
                 if (aopOnLogExecutingModels[i].AopOnLogExecuting == null)
-                    exceptionHelper!.ThrowException("AopOnLogExecuting 配置不正确");
+                    exceptionHelper!.ThrowException(EnumException.SqlSugarAopExecutingParamsFailed);
                 aopOnLogExecutingModels[i].ConfigId = opts!.ColaOrmConfig![i].ConfigId ?? string.Empty;
             }
         }
@@ -241,7 +242,7 @@ public static class SqlSugarInject
     {
         var exceptionHelper = services.BuildServiceProvider().GetService<IColaException>();
         if (option.ColaOrmConfig == null || option.ColaOrmConfig.Count == 0)
-            exceptionHelper!.ThrowException("ColaEfConfig 配置不正确");
+            exceptionHelper!.ThrowException(EnumException.ColaEfConfigFailed);
     }
 
     private static void ValidateAopOnError(IServiceCollection services, List<ConnectionConfig> sqlSugarConfigLst,
@@ -251,11 +252,11 @@ public static class SqlSugarInject
         if (aopOnErrorModels != null)
         {
             if (aopOnErrorModels.Count != sqlSugarConfigLst.Count)
-                exceptionHelper!.ThrowException("AopOnLogExecuting 个数配置不正确");
+                exceptionHelper!.ThrowException(EnumException.SqlSugarAopExecutingParamNumberFailed);
             for (var i = 0; i < aopOnErrorModels.Count; i++)
             {
                 if (aopOnErrorModels[i].AopOnError == null)
-                    exceptionHelper!.ThrowException("AopOnError 配置不正确");
+                    exceptionHelper!.ThrowException(EnumException.AopOnErrorFailed);
                 aopOnErrorModels[i].ConfigId = opts!.ColaOrmConfig![i].ConfigId ?? string.Empty;
             }
         }
@@ -266,7 +267,7 @@ public static class SqlSugarInject
         var exceptionHelper = services.BuildServiceProvider().GetService<IColaException>();
         if (sqlSugarConfigLst.Count > 1)
             if (sqlSugarConfigLst.Count(c => string.IsNullOrEmpty(c.ConfigId)) > 0)
-                exceptionHelper!.ThrowException("SqlSugar 多库配置 ConfigId 必须配置");
+                exceptionHelper!.ThrowException(EnumException.SqlSugarMustNeedConfigId);
     }
 
     #endregion
