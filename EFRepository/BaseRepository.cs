@@ -180,7 +180,7 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
             startPage,
             pageSize);
         int pageCount = Math.Ceiling((totalCount.Value.IntToDecimal() / pageSize.IntToDecimal())).DecimalToInt();
-        return new ViewModel<TEntity>() { TotalCount = totalCount, PageCount = pageCount, CurrnetPage = startPage, PageSize = pageSize, Data = list };
+        return new ViewModel<TEntity>() { TotalCount = totalCount, PageCount = pageCount, CurrentPage = startPage, PageSize = pageSize, Data = list };
     }
     
     public async Task<ViewModel<TEntity>> QueryViewModelPagingAsync(
@@ -198,7 +198,7 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
             startPage,
             pageSize);
         int pageCount = Math.Ceiling((totalCount.Value.IntToDecimal() / pageSize.IntToDecimal())).DecimalToInt();
-        return new ViewModel<TEntity>() { TotalCount = totalCount, PageCount = pageCount, CurrnetPage = startPage, PageSize = pageSize, Data = list };
+        return new ViewModel<TEntity>() { TotalCount = totalCount, PageCount = pageCount, CurrentPage = startPage, PageSize = pageSize, Data = list };
     }
 
     #endregion
