@@ -4,7 +4,7 @@ using Cola.ColaEF.EntityBase;
 using Cola.ColaEF.Models;
 using Cola.ColaEF.Tenant;
 using Cola.Core.ColaConsole;
-using Cola.Core.ColaException;
+using Cola.Core.ColaEx;
 using Cola.Core.Models.ColaEF;
 using Cola.CoreUtils.Constants;
 using Cola.CoreUtils.Enums;

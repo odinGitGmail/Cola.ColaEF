@@ -1,5 +1,5 @@
 ﻿using System.Collections.Concurrent;
-using Cola.Core.ColaException;
+using Cola.Core.ColaEx;
 using Cola.Core.Models.ColaEF;
 using Cola.CoreUtils.Constants;
 using Cola.CoreUtils.Extensions;
